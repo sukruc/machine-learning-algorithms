@@ -57,3 +57,5 @@ Every model is implemented in both R and Python's scikit-learn. For Python, both
 - Download or clone repository: `git clone https://github.com/sukruc/machine-learning-algorithms.git`
 - Follow table of contents to find a specific application or template, or randomly explore the content.
 - Enjoy!
+
+## Notes
