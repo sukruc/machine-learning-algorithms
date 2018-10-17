@@ -1,7 +1,8 @@
 ## Machine Learning Algorithms
 This repository contains several machine learning algorithm implementations as well as templates for various ML pipeline works such as preprocessing and visualization.
 
-Every model is implemented in both R and Python's scikit-learn. For Python, both notebooks and .py files are included.
+Every model is implemented in both R and Python's scikit-learn.  
+For Python, both notebooks and .py files are included.
 
 ## Contents:
 
