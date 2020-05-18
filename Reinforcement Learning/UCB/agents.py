@@ -48,6 +48,32 @@ class SentetikOrtam:
         pass
 
 
+class GecikmeliOrtam(Ortam):
+    def __init__(self, *args, geri_besleme_olasiligi=0.2, **kwargs):
+        Ortam.__init__(self, *args, **kwargs)
+        self.tutulan_tablo = {}
+        self.geri_besleme_olasiligi = geri_besleme_olasiligi
+
+    def tutulani_bosalt(self):
+        self.tutulan_tablo = {}
+
+    def goruntule(self, ad_num):
+        if self.n >= self.max_n:
+            raise OrtamHatasi('Bu Ortam nesnesi tukendi.')
+        odul = self.data.loc[self.n, ad_num]
+        self.n += 1
+        if ad_num not in self.tutulan_tablo:
+            self.tutulan_tablo[ad_num] = {'Ni': 0, 'Ri': 0}
+        self.tutulan_tablo[ad_num]['Ni'] += 1
+        self.tutulan_tablo[ad_num]['Ri'] += odul
+        if np.random.random() < self.geri_besleme_olasiligi:
+            sonuc = self.tutulan_tablo
+            self.tutulani_bosalt()
+        else:
+            sonuc = {}
+        return sonuc
+
+
 class Ajan:
     def __init__(self, n_ads):
         self.n_ads = n_ads
@@ -84,6 +110,24 @@ class Ajan:
         return pd.DataFrame(self.tablo).round(2)
 
 
+class GecikmeliAjan(Ajan):
+    def tabloya_kat(self, reklam_sozlugu):
+        # {3: {'Ni':5, 'Ri':1},
+        #  5: {'Ni':17, 'Ri':12}}
+        for reklam in reklam_sozlugu:
+            self.tablo[reklam]['Ni'] += reklam_sozlugu[reklam]['Ni']
+            self.tablo[reklam]['Ri'] += reklam_sozlugu[reklam]['Ri']
+
+    def ogren(self, ortam):
+        try:
+            reklam_no = self.reklam_sec()
+            cikti = ortam.goruntule(reklam_no)
+            self.tabloya_kat(cikti)
+            self.tabloyu_guncelle()
+        except OrtamHatasi:
+            pass
+
+
 class RassalAjan(Ajan):
     def reklam_sec(self):
         self.sayaci_artir()
@@ -105,6 +149,10 @@ class UCBAjan(Ajan):
         return reklam
 
 
+class GecikmeliUCB(GecikmeliAjan, UCBAjan):
+    pass
+
+
 class ThompsonAjan(Ajan):
     def tabloyu_guncelle(self):
         for reklam in self.tablo.values():
@@ -118,6 +166,10 @@ class ThompsonAjan(Ajan):
                      key=lambda x: x[1].get('beta', 1e9))[0]
         self.sayaci_artir()
         return reklam
+
+
+class GecikmeliThompson(GecikmeliAjan, ThompsonAjan):
+    pass
 
 
 if __name__ == '__main__':
